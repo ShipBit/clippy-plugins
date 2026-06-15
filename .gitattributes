@@ -1,0 +1,5 @@
+# Einheitliche LF-Zeilenenden für Plugin-Quellen, damit Builds plattformunabhängig
+# (Windows lokal == Linux-CI) byte-identische Zips und damit stabile SHA256 erzeugen.
+* text=auto eol=lf
+*.zip binary
+*.wasm binary
