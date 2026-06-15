@@ -27,6 +27,10 @@ const BASE_URL =
   process.env.CATALOG_BASE_URL ??
   "https://raw.githubusercontent.com/ShipBit/clippy-plugins/main/dist";
 
+// Fester Zeitstempel für alle Zip-Einträge → deterministische Zips (gleiche
+// Eingabe ⇒ gleiche SHA256), sonst baut die CI bei jedem Lauf neue Hashes.
+const FIXED_DATE = new Date("2020-01-01T00:00:00Z");
+
 function zipDir(srcDir, outFile) {
   return new Promise((resolve, reject) => {
     const output = createWriteStream(outFile);
@@ -35,7 +39,7 @@ function zipDir(srcDir, outFile) {
     archive.on("error", reject);
     archive.pipe(output);
     // Plugin-Dateien ins Zip-Wurzelverzeichnis; Kuratierungs-Metadaten raus.
-    archive.glob("**/*", { cwd: srcDir, ignore: ["store.json"], dot: false });
+    archive.glob("**/*", { cwd: srcDir, ignore: ["store.json"], dot: false }, { date: FIXED_DATE });
     archive.finalize();
   });
 }

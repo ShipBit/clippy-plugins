@@ -20,7 +20,7 @@
     "minHostApi": "^1.0",
     "downloadUrl": "https://raw.githubusercontent.com/ShipBit/clippy-plugins/main/dist/de.shipbit.clippy.proactive-wasm-0.1.0.zip",
     "sizeBytes": 48409,
-    "sha256": "2ecc9f03a9e4210cddbf3497575bf02c8856d6b1b97a3b358758e6e2fef87842",
+    "sha256": "dbad048f000398ac09d4df96dc7c4cdccf648f64c660b9193ec2dca4bbad633c",
     "tags": [
       "proaktiv",
       "produktivität"
@@ -48,7 +48,7 @@
     "minHostApi": "^1.0",
     "downloadUrl": "https://raw.githubusercontent.com/ShipBit/clippy-plugins/main/dist/de.shipbit.clippy.read-aloud-0.1.0.zip",
     "sizeBytes": 1511,
-    "sha256": "d00dff0def2bcf36f91d941cf2f905d6499ce7c2bc3dcaaa456620af152151a6",
+    "sha256": "71ce82a771e71f9111f8d54c676c77217d20e02a0fecac2478b94d72377b57e0",
     "tags": [
       "vorlesen",
       "barrierefreiheit",
@@ -76,7 +76,7 @@
     "minHostApi": "^1.0",
     "downloadUrl": "https://raw.githubusercontent.com/ShipBit/clippy-plugins/main/dist/de.shipbit.clippy.reminder-0.1.0.zip",
     "sizeBytes": 1249,
-    "sha256": "8320c74ee6da4d53aedfb42b4ab6ab3dd627c19561321237e8b455df20b86379",
+    "sha256": "ff6f30db9c5d0dd887addf9f0f05167b8eceb0772584da5de85e01ebe31800bd",
     "tags": [
       "demo",
       "erinnerung"
@@ -107,7 +107,7 @@
     "minHostApi": "^1.0",
     "downloadUrl": "https://raw.githubusercontent.com/ShipBit/clippy-plugins/main/dist/de.shipbit.clippy.journal-cam-0.1.0.zip",
     "sizeBytes": 3426,
-    "sha256": "666bcbe57271626d10c90e6a19c2699dfeeb58be748b4f59bbfb904d99c9cc1e",
+    "sha256": "77f928755d0e37d606e36d285fcf056d18929a222c65ce961fcb31a95689798e",
     "tags": [
       "tagebuch",
       "vision",
