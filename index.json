@@ -10,7 +10,7 @@
       "en": "Speaks up on clipboard error messages — as a sandboxed WASM plugin, no external dependency. Toggle it with the Enabled switch."
     },
     "author": "shipbit",
-    "homepage": "https://github.com/shipbit/clippy-plugins",
+    "homepage": "https://github.com/ShipBit/clippy-plugins",
     "version": "0.1.0",
     "runtime": "wasm",
     "permissions": [
@@ -18,7 +18,7 @@
       "ui.bubble"
     ],
     "minHostApi": "^1.0",
-    "downloadUrl": "https://raw.githubusercontent.com/shipbit/clippy-plugins/main/dist/de.shipbit.clippy.proactive-wasm-0.1.0.zip",
+    "downloadUrl": "https://raw.githubusercontent.com/ShipBit/clippy-plugins/main/dist/de.shipbit.clippy.proactive-wasm-0.1.0.zip",
     "sizeBytes": 48409,
     "sha256": "86c5b2e4d48036107c762c0345971b57b729355822b52aa893cd3b1e9ade163c",
     "tags": [
@@ -38,7 +38,7 @@
       "en": "Reads the clipboard text aloud on a hotkey (Alt+Shift+R). Demo of the hotkey trigger + TTS (first run sets up speech and can take a while)."
     },
     "author": "shipbit",
-    "homepage": "https://github.com/shipbit/clippy-plugins",
+    "homepage": "https://github.com/ShipBit/clippy-plugins",
     "version": "0.1.0",
     "runtime": "sidecar",
     "permissions": [
@@ -46,7 +46,7 @@
       "tts"
     ],
     "minHostApi": "^1.0",
-    "downloadUrl": "https://raw.githubusercontent.com/shipbit/clippy-plugins/main/dist/de.shipbit.clippy.read-aloud-0.1.0.zip",
+    "downloadUrl": "https://raw.githubusercontent.com/ShipBit/clippy-plugins/main/dist/de.shipbit.clippy.read-aloud-0.1.0.zip",
     "sizeBytes": 1511,
     "sha256": "3e36320822ab150379f2d4cbb94b40bc20b0a5db7c0b0a401f1caf4a93487478",
     "tags": [
@@ -67,14 +67,14 @@
       "en": "Example of the interval trigger: pops up periodically with a bubble. Interval configurable in settings (takes effect live)."
     },
     "author": "shipbit",
-    "homepage": "https://github.com/shipbit/clippy-plugins",
+    "homepage": "https://github.com/ShipBit/clippy-plugins",
     "version": "0.1.0",
     "runtime": "sidecar",
     "permissions": [
       "ui.bubble"
     ],
     "minHostApi": "^1.0",
-    "downloadUrl": "https://raw.githubusercontent.com/shipbit/clippy-plugins/main/dist/de.shipbit.clippy.reminder-0.1.0.zip",
+    "downloadUrl": "https://raw.githubusercontent.com/ShipBit/clippy-plugins/main/dist/de.shipbit.clippy.reminder-0.1.0.zip",
     "sizeBytes": 1249,
     "sha256": "73013288ebaf9b4ecd0cbc1c421c3e4fb60644369e4f17232d9dfbfdcb355782",
     "tags": [
@@ -94,7 +94,7 @@
       "en": "Periodically captures the monitor under the cursor, asks the local AI what you are working on, and appends it as a journal entry to a Markdown file (one per day). Requires a multimodal model. Everything stays local."
     },
     "author": "shipbit",
-    "homepage": "https://github.com/shipbit/clippy-plugins",
+    "homepage": "https://github.com/ShipBit/clippy-plugins",
     "icon": "📔",
     "version": "0.1.0",
     "runtime": "sidecar",
@@ -105,7 +105,7 @@
       "storage"
     ],
     "minHostApi": "^1.0",
-    "downloadUrl": "https://raw.githubusercontent.com/shipbit/clippy-plugins/main/dist/de.shipbit.clippy.journal-cam-0.1.0.zip",
+    "downloadUrl": "https://raw.githubusercontent.com/ShipBit/clippy-plugins/main/dist/de.shipbit.clippy.journal-cam-0.1.0.zip",
     "sizeBytes": 3426,
     "sha256": "236bc4a4a606b1dd77c114f9d5ac7b472831be868fe29a30dcd1b39504d0b0b8",
     "tags": [

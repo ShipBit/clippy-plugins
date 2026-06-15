@@ -8,12 +8,17 @@ das Backend des In-App-Stores (Einstellungen → Store). Clippy lädt von hier
 
 - Jedes Plugin liegt als Quelle unter `plugins/<ordner>/` (mit `clippy.plugin.json`
   + Dateien, optional `store.json` für Kuratierung).
-- Eine GitHub-Action (`.github/workflows/build.yml`) baut bei jeder Änderung pro
-  Plugin ein Zip nach `dist/<id>-<version>.zip`, berechnet die SHA256-Summe und
-  erzeugt `index.json`. Beides wird committet.
+- Der Maintainer baut den Katalog mit `npm run build` (erzeugt `dist/<id>-<version>.zip`
+  + `index.json` mit SHA256) und committet das Ergebnis.
 - Clippy lädt `index.json` von
-  `https://raw.githubusercontent.com/shipbit/clippy-plugins/main/index.json`
+  `https://raw.githubusercontent.com/ShipBit/clippy-plugins/main/index.json`
   und die Zips aus `dist/` (per `raw.githubusercontent`).
+
+### CI optional aktivieren
+Eine fertige GitHub-Action liegt unter `ci/build.workflow.yml` (baut + committet bei
+jeder Änderung automatisch). Aktivieren: nach `gh auth refresh -h github.com -s workflow`
+die Datei nach `.github/workflows/build.yml` verschieben und pushen (das Pushen von
+Workflows braucht den `workflow`-Token-Scope).
 
 ## Vertrauensmodell
 

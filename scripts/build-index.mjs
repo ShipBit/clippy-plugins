@@ -25,7 +25,7 @@ const DIST_DIR = join(ROOT, "dist");
 // Basis-URL der Zips. Muss zum Hosting passen (raw.githubusercontent des Repos).
 const BASE_URL =
   process.env.CATALOG_BASE_URL ??
-  "https://raw.githubusercontent.com/shipbit/clippy-plugins/main/dist";
+  "https://raw.githubusercontent.com/ShipBit/clippy-plugins/main/dist";
 
 function zipDir(srcDir, outFile) {
   return new Promise((resolve, reject) => {
@@ -71,7 +71,7 @@ async function main() {
       name: manifest.name,
       description: manifest.description ?? {},
       author: manifest.author ?? "shipbit",
-      homepage: manifest.homepage ?? "https://github.com/shipbit/clippy-plugins",
+      homepage: manifest.homepage ?? "https://github.com/ShipBit/clippy-plugins",
       icon: manifest.icon ?? manifest.contributes?.settingsSection?.icon,
       version: manifest.version,
       runtime: manifest.runtime,
