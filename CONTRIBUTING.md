@@ -22,8 +22,9 @@ Katalog — das ist die Kuratierung.
    { "tags": ["produktivität"], "recommended": false }
    ```
    (`store.json` landet **nicht** im ausgelieferten Zip.)
-3. **Nicht** `dist/` oder `index.json` von Hand bearbeiten — die werden von der CI
-   erzeugt. Lokal prüfen mit `npm install && npm run build`.
+3. **`dist/` und `index.json` nicht selbst committen** — die erzeugt die CI
+   verbindlich beim Merge (lokale Builds können sich durch zlib/Plattform
+   unterscheiden). Lokal nur zum Prüfen: `npm install && npm run build`.
 4. Pull Request öffnen. Im Review schauen wir auf Manifest, Permissions (so wenige
    wie möglich), Runtime und — bei Sidecar — auf den Quellcode.
 
