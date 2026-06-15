@@ -1,0 +1,47 @@
+{
+  "id": "de.shipbit.clippy.journal-cam",
+  "name": { "de": "Visuelles Tagebuch", "en": "Visual Journal" },
+  "version": "0.1.0",
+  "hostApi": "^1.0",
+  "description": {
+    "de": "Macht periodisch einen Screenshot des Monitors unter der Maus, lässt die lokale KI beschreiben, woran du gerade arbeitest, und hängt das als Tagebuch-Eintrag an eine Markdown-Datei an (eine pro Tag). Braucht ein multimodales Modell. Alles bleibt lokal.",
+    "en": "Periodically captures the monitor under the cursor, asks the local AI what you are working on, and appends it as a journal entry to a Markdown file (one per day). Requires a multimodal model. Everything stays local."
+  },
+  "runtime": "sidecar",
+  "entry": { "command": "python", "args": ["journal_cam.py"] },
+  "permissions": ["vision", "llm.chat", "ui.bubble", "storage"],
+  "contributes": {
+    "interval": 300,
+    "settingsSection": {
+      "icon": "📔",
+      "fields": [
+        {
+          "key": "prompt",
+          "type": "string",
+          "label": { "de": "Analyse-Prompt", "en": "Analysis prompt" },
+          "help": {
+            "de": "Was die KI zum Screenshot beantworten soll. Antwortet sie mit SKIP, wird kein Eintrag geschrieben.",
+            "en": "What the AI should answer about the screenshot. If it replies SKIP, no entry is written."
+          },
+          "default": "Schau dir diesen Screenshot an und beschreibe in 1–2 Sätzen in der Ich-Form, woran ich gerade arbeite — sachlich, als Tagebuch-Eintrag. Wenn nichts Aussagekräftiges zu sehen ist, antworte nur mit: SKIP"
+        },
+        {
+          "key": "folder",
+          "type": "string",
+          "label": { "de": "Speicherordner", "en": "Save folder" },
+          "help": {
+            "de": "Leer = Dokumente-Ordner. Pro Tag eine Datei clippy-journal-JJJJ-MM-TT.md.",
+            "en": "Empty = Documents folder. One file per day: clippy-journal-YYYY-MM-DD.md."
+          },
+          "default": ""
+        },
+        {
+          "key": "notify",
+          "type": "bool",
+          "label": { "de": "Kurze Blase nach jedem Eintrag", "en": "Brief bubble after each entry" },
+          "default": false
+        }
+      ]
+    }
+  }
+}

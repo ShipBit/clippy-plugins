@@ -1,0 +1,16 @@
+{
+  "id": "de.shipbit.clippy.proactive-wasm",
+  "name": { "de": "Proaktiver Modus (WASM)", "en": "Proactive Mode (WASM)" },
+  "version": "0.1.0",
+  "hostApi": "^1.0",
+  "description": {
+    "de": "Meldet sich bei Fehlermeldungen in der Zwischenablage — als sandboxed WASM-Plugin, ohne externe Abhängigkeit. Über den Aktiviert-Schalter an/aus.",
+    "en": "Speaks up on clipboard error messages — as a sandboxed WASM plugin, no external dependency. Toggle it with the Enabled switch."
+  },
+  "runtime": "wasm",
+  "entry": { "command": "proactive.wasm" },
+  "permissions": ["clipboard.read", "ui.bubble"],
+  "contributes": {
+    "events": ["clipboard.changed"]
+  }
+}

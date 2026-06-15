@@ -1,0 +1,14 @@
+{
+  "id": "de.shipbit.clippy.read-aloud",
+  "name": { "de": "Vorlesen (Hotkey)", "en": "Read aloud (hotkey)" },
+  "version": "0.1.0",
+  "hostApi": "^1.0",
+  "description": {
+    "de": "Liest auf Hotkey (Alt+Shift+R) den Text aus der Zwischenablage vor. Demo für Hotkey-Trigger + TTS (das erste Vorlesen richtet die Sprachausgabe ein und kann dauern).",
+    "en": "Reads the clipboard text aloud on a hotkey (Alt+Shift+R). Demo of the hotkey trigger + TTS (first run sets up speech and can take a while)."
+  },
+  "runtime": "sidecar",
+  "entry": { "command": "python", "args": ["read_aloud.py"] },
+  "permissions": ["clipboard.read", "tts"],
+  "contributes": { "hotkey": "Alt+Shift+R" }
+}

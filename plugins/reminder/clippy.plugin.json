@@ -1,0 +1,14 @@
+{
+  "id": "de.shipbit.clippy.reminder",
+  "name": { "de": "Erinnerung (Demo)", "en": "Reminder (demo)" },
+  "version": "0.1.0",
+  "hostApi": "^1.0",
+  "description": {
+    "de": "Beispiel für den Interval-Trigger: meldet sich periodisch mit einer Blase. Intervall in den Einstellungen änderbar (wirkt sofort).",
+    "en": "Example of the interval trigger: pops up periodically with a bubble. Interval configurable in settings (takes effect live)."
+  },
+  "runtime": "sidecar",
+  "entry": { "command": "python", "args": ["reminder.py"] },
+  "permissions": ["ui.bubble"],
+  "contributes": { "interval": 20 }
+}

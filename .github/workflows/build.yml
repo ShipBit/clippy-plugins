@@ -1,0 +1,40 @@
+name: Katalog bauen
+
+# Baut bei jeder Änderung an den Plugin-Quellen die Zips + index.json neu und
+# committet das Ergebnis. So bleibt der von Clippy geladene index.json (samt
+# SHA256) immer konsistent zu den dist/-Zips.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "plugins/**"
+      - "scripts/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci || npm install
+      - run: npm run build
+      - name: dist + index.json committen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add dist index.json
+          if git diff --cached --quiet; then
+            echo "Keine Änderungen am Katalog."
+          else
+            git commit -m "chore: Katalog neu gebaut [skip ci]"
+            git push
+          fi

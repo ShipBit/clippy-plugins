@@ -1,0 +1,13 @@
+{
+  "name": "clippy-plugins",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Kuratierter Plugin-Katalog für Clippy (App-Store-Backend).",
+  "scripts": {
+    "build": "node scripts/build-index.mjs"
+  },
+  "devDependencies": {
+    "archiver": "^7.0.1"
+  }
+}
