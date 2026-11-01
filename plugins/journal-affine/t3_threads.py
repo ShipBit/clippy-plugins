@@ -22,11 +22,19 @@ DEFAULT_PROJECTS = "~, ~/Developer/*, ~/Projects/*"
 MAX_CHARS = 16000  # Transkript-Budget für das lokale Modell
 MAX_MESSAGES = 200
 PROMPT = (
-    "Hier ist das Protokoll einer Arbeitssitzung mit einem Coding-Agenten in T3 Code "
-    "(Projekt: {project}, Thread: {title}). Ich habe den Thread gerade als erledigt "
-    "markiert. Fasse für mein Tagebuch in 2–4 Sätzen in der Ich-Form zusammen, was ich "
-    "erreichen wollte, was dabei herauskam und was offen geblieben ist. Sachlich, keine "
-    "Aufzählung, kein Vorspann.\n\n{transcript}"
+    "Unten steht das Protokoll eines Threads in T3 Code, den ich gerade als erledigt "
+    "markiert habe (Projekt: {project}, Thread: {title}). Mit „Ich“ bin ich gemeint, der "
+    "Nutzer; „Agent“ ist der KI-Coding-Agent, der für mich gearbeitet hat.\n\n"
+    "Schreib daraus einen Tagebuch-Eintrag, mit dem später ich oder ein KI-Assistent "
+    "Fragen wie „Was haben wir letztens an X gemacht?“ oder „Warum haben wir uns für Y "
+    "entschieden?“ beantworten können. 3–6 Sätze Fließtext aus meiner Sicht („ich habe "
+    "mit dem Agenten …“, „der Agent hat …“) mit:\n"
+    "- worum es ging und warum,\n"
+    "- was konkret gemacht oder entschieden wurde, mit den Namen, nach denen man später "
+    "sucht (Repos, Dateien, Funktionen, Tools, Modelle, PR- und Issue-Nummern),\n"
+    "- dem Ergebnis und dem, was offen geblieben ist.\n"
+    "Nur, was im Protokoll steht, nichts erfinden. Kein Vorspann, keine Überschrift.\n\n"
+    "Protokoll:\n\n{transcript}"
 )
 
 
