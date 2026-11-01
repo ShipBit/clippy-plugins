@@ -1,11 +1,11 @@
 {
   "id": "de.shipbit.clippy.journal-cam",
   "name": { "de": "Visuelles Tagebuch", "en": "Visual Journal" },
-  "version": "0.1.0",
+  "version": "0.2.0",
   "hostApi": "^1.0",
   "description": {
-    "de": "Macht periodisch einen Screenshot des Monitors unter der Maus, lässt die lokale KI beschreiben, woran du gerade arbeitest, und hängt das als Tagebuch-Eintrag an eine Markdown-Datei an (eine pro Tag). Braucht ein multimodales Modell. Alles bleibt lokal.",
-    "en": "Periodically captures the monitor under the cursor, asks the local AI what you are working on, and appends it as a journal entry to a Markdown file (one per day). Requires a multimodal model. Everything stays local."
+    "de": "Macht periodisch einen Screenshot des Monitors unter der Maus, lässt die lokale KI beschreiben, woran du gerade arbeitest, und hängt das als Tagebuch-Eintrag an eine Markdown-Datei an (eine pro Tag). Optional kommen Zusammenfassungen gesettleter T3-Code-Threads dazu. Braucht ein multimodales Modell. Alles bleibt lokal.",
+    "en": "Periodically captures the monitor under the cursor, asks the local AI what you are working on, and appends it as a journal entry to a Markdown file (one per day). Optionally adds summaries of settled T3 Code threads. Requires a multimodal model. Everything stays local."
   },
   "runtime": "sidecar",
   "entry": { "command": "python", "args": ["journal_cam.py"] },
@@ -32,6 +32,26 @@
           "help": {
             "de": "Leer = Dokumente-Ordner. Pro Tag eine Datei clippy-journal-JJJJ-MM-TT.md.",
             "en": "Empty = Documents folder. One file per day: clippy-journal-YYYY-MM-DD.md."
+          },
+          "default": ""
+        },
+        {
+          "key": "t3",
+          "type": "bool",
+          "label": { "de": "T3-Code-Threads zusammenfassen", "en": "Summarize T3 Code threads" },
+          "help": {
+            "de": "Settlest du einen Thread in T3 Code, fasst die KI ihn zusammen und schreibt das ins Tagebuch. Braucht die t3-CLI und eine laufende T3-App.",
+            "en": "When you settle a thread in T3 Code, the AI summarizes it into the journal. Needs the t3 CLI and a running T3 app."
+          },
+          "default": false
+        },
+        {
+          "key": "t3Projects",
+          "type": "string",
+          "label": { "de": "T3-Projektordner", "en": "T3 project folders" },
+          "help": {
+            "de": "Kommagetrennte Ordner bzw. Globs, deren T3-Projekte abgefragt werden. Leer = ~, ~/Developer/*, ~/Projects/*",
+            "en": "Comma-separated folders or globs whose T3 projects are checked. Empty = ~, ~/Developer/*, ~/Projects/*"
           },
           "default": ""
         },
