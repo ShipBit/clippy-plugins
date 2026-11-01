@@ -1,0 +1,108 @@
+{
+  "id": "de.shipbit.clippy.journal-affine",
+  "name": {
+    "de": "Tagebuch in AFFiNE",
+    "en": "Journal to AFFiNE"
+  },
+  "version": "0.1.0",
+  "hostApi": "^1.0",
+  "description": {
+    "de": "Wie das visuelle Tagebuch: periodisch ein Screenshot, die lokale KI beschreibt, woran du arbeitest. Die Einträge landen aber in einem selbst gehosteten oder Cloud-AFFiNE, als ein Journal-Doc pro Tag in einem eigenen Ordner. Optional kommen Zusammenfassungen gesettleter T3-Code-Threads dazu. Ist AFFiNE nicht erreichbar, puffert das Plugin und liefert später nach. Braucht ein multimodales Modell, Node.js (npx) und einen einmaligen Login, siehe README.",
+    "en": "Like the visual journal: periodic screenshot, the local AI describes what you are working on. Entries go to a self-hosted or cloud AFFiNE instead, one journal doc per day in a dedicated folder. Optionally adds summaries of settled T3 Code threads. If AFFiNE is unreachable, entries are queued and delivered later. Requires a multimodal model, Node.js (npx) and a one-time login, see README."
+  },
+  "runtime": "sidecar",
+  "entry": {
+    "command": "python",
+    "args": [
+      "journal_affine.py"
+    ]
+  },
+  "permissions": [
+    "vision",
+    "llm.chat",
+    "ui.bubble",
+    "storage"
+  ],
+  "contributes": {
+    "interval": 300,
+    "settingsSection": {
+      "icon": "📔",
+      "fields": [
+        {
+          "key": "prompt",
+          "type": "string",
+          "label": {
+            "de": "Analyse-Prompt",
+            "en": "Analysis prompt"
+          },
+          "help": {
+            "de": "Was die KI zum Screenshot beantworten soll. Antwortet sie mit SKIP, wird kein Eintrag geschrieben.",
+            "en": "What the AI should answer about the screenshot. If it replies SKIP, no entry is written."
+          },
+          "default": "Schau dir diesen Screenshot an und beschreibe in 1–2 Sätzen in der Ich-Form, woran ich gerade arbeite — sachlich, als Tagebuch-Eintrag. Wenn nichts Aussagekräftiges zu sehen ist, antworte nur mit: SKIP"
+        },
+        {
+          "key": "folder",
+          "type": "string",
+          "label": {
+            "de": "AFFiNE-Ordner",
+            "en": "AFFiNE folder"
+          },
+          "help": {
+            "de": "Ordner in der AFFiNE-Seitenleiste (oberste Ebene). Fehlt er, legt das Plugin ihn an.",
+            "en": "Top-level folder in the AFFiNE sidebar. Created if missing."
+          },
+          "default": "Clippy"
+        },
+        {
+          "key": "title",
+          "type": "string",
+          "label": {
+            "de": "Titel der Tages-Docs",
+            "en": "Daily doc title"
+          },
+          "help": {
+            "de": "{date} wird durch JJJJ-MM-TT ersetzt.",
+            "en": "{date} is replaced with YYYY-MM-DD."
+          },
+          "default": "Clippy-Tagebuch {date}"
+        },
+        {
+          "key": "t3",
+          "type": "bool",
+          "label": {
+            "de": "T3-Code-Threads zusammenfassen",
+            "en": "Summarize T3 Code threads"
+          },
+          "help": {
+            "de": "Settlest du einen Thread in T3 Code, fasst die KI ihn zusammen und schreibt das ins Tagebuch. Braucht die t3-CLI und eine laufende T3-App.",
+            "en": "When you settle a thread in T3 Code, the AI summarizes it into the journal. Needs the t3 CLI and a running T3 app."
+          },
+          "default": false
+        },
+        {
+          "key": "t3Projects",
+          "type": "string",
+          "label": {
+            "de": "T3-Projektordner",
+            "en": "T3 project folders"
+          },
+          "help": {
+            "de": "Kommagetrennte Ordner bzw. Globs, deren T3-Projekte abgefragt werden. Leer = ~, ~/Developer/*, ~/Projects/*",
+            "en": "Comma-separated folders or globs whose T3 projects are checked. Empty = ~, ~/Developer/*, ~/Projects/*"
+          },
+          "default": ""
+        },
+        {
+          "key": "notify",
+          "type": "bool",
+          "label": {
+            "de": "Kurze Blase nach jedem Eintrag",
+            "en": "Brief bubble after each entry"
+          },
+          "default": false
+        }
+      ]
+    }
+  }
+}
