@@ -2,9 +2,15 @@
 """Tagebuch in AFFiNE: Interval-Trigger + Vision + LLM -> AFFiNE-Journal.
 
 Wie journal-cam: Auf den Interval-Trigger macht der Host einen Screenshot
-(``vision.capture``), die lokale KI beschreibt ihn (``llm.chat``). Statt in eine Markdown-Datei geht der Eintrag nach AFFiNE:
-ein Doc pro Tag, als nativer Journal-Eintrag markiert und im Ordner der
-Einstellung ``folder`` abgelegt.
+(``vision.capture``), die lokale KI beschreibt ihn (``llm.chat``). Anders als
+dort wird nicht jede Beschreibung ein Eintrag: Die Beobachtungen sammeln sich
+lokal (``observations.jsonl``), und erst nach einem Block (Einstellung
+``block``, Standard 30 Minuten) macht die KI daraus einen kurzen Eintrag
+``## HH:MM–HH:MM``. Das hält das Tagebuch knapp, und das Modell sieht mehrere
+Beobachtungen im Zusammenhang statt eines einzelnen Screenshots.
+
+Die Einträge gehen nach AFFiNE: ein Doc pro Tag, als nativer Journal-Eintrag
+markiert und im Ordner der Einstellung ``folder`` abgelegt.
 
 AFFiNE spricht das Plugin über den Community-MCP-Server ``affine-mcp-server``
 (stdio, per ``npx`` in fester Version, braucht Node.js). Die eingebauten
@@ -40,15 +46,28 @@ PLUGIN_DIR = os.path.dirname(os.path.abspath(__file__))
 STATE_DIR = t3_threads.state_dir("clippy-journal-affine")
 QUEUE_FILE = os.path.join(STATE_DIR, "queue.jsonl")
 STATE_FILE = os.path.join(STATE_DIR, "state.json")
+OBS_FILE = os.path.join(STATE_DIR, "observations.jsonl")
 MCP_VERSION = "3.10.2"  # affine-mcp-server, bewusst gepinnt
 MCP_LOG = os.path.join(STATE_DIR, "affine-mcp.log")
 MCP_TIMEOUT = 120  # pro Sitzung; hängt affine-mcp, wird es beendet
 
 # Müssen zu den Manifest-Defaults passen.
 DEFAULT_PROMPT = (
-    "Schau dir diesen Screenshot an und beschreibe in 1–2 Sätzen in der Ich-Form, "
-    "woran ich gerade arbeite — sachlich, als Tagebuch-Eintrag. Wenn nichts "
-    "Aussagekräftiges zu sehen ist, antworte nur mit: SKIP"
+    "Notiere im Telegrammstil (höchstens 25 Wörter), was auf diesem Screenshot zu "
+    "sehen ist: App, Projekt bzw. Repo, Datei oder Webseite und Thema bzw. Tätigkeit."
+    " Übernimm konkrete Namen, die sichtbar sind (Fenster- und Thread-Titel, "
+    "Dateinamen, Überschriften). Nur was sichtbar ist, nicht raten. Wenn nichts "
+    "Aussagekräftiges zu sehen ist (Sperrbildschirm, leerer Desktop), antworte nur "
+    "mit: SKIP"
+)
+DEFAULT_BLOCK = "30"
+BLOCK_PROMPT = (
+    "Hier sind Beobachtungen meines Bildschirms von {start} bis {end}, eine alle paar "
+    "Minuten. Schreib daraus einen Tagebuch-Eintrag in 1–2 Sätzen aus meiner Sicht "
+    "(Ich-Form): woran ich in dieser Zeit gearbeitet habe, mit den konkreten Namen "
+    "(Projekte, Repos, Dateien, Apps, Webseiten). Gleiches zusammenfassen, Einmaliges und "
+    "Nebensächliches weglassen, nichts dazuerfinden, keine Füllwörter, kein Vorspann. "
+    "Wenn nichts Aussagekräftiges dabei ist, antworte nur mit: SKIP\n\n{observations}"
 )
 DEFAULT_FOLDER = "Clippy"
 DEFAULT_TITLE = "Clippy-Tagebuch {date}"
@@ -243,28 +262,11 @@ def enqueue(entry):
 
 
 def read_queue():
-    entries = []
-    try:
-        with open(QUEUE_FILE, encoding="utf-8") as f:
-            for line in f:
-                try:
-                    entries.append(json.loads(line))
-                except json.JSONDecodeError:
-                    pass
-    except OSError:
-        pass
-    return entries
+    return read_jsonl(QUEUE_FILE)
 
 
 def write_queue(entries):
-    if entries:
-        tmp = QUEUE_FILE + ".tmp"
-        with open(tmp, "w", encoding="utf-8") as f:
-            for e in entries:
-                f.write(json.dumps(e, ensure_ascii=False) + "\n")
-        os.replace(tmp, QUEUE_FILE)
-    elif os.path.exists(QUEUE_FILE):
-        os.remove(QUEUE_FILE)
+    write_jsonl(QUEUE_FILE, entries)
 
 
 def flush():
@@ -321,12 +323,38 @@ def flush():
 
 # --- Eintrag erzeugen -------------------------------------------------------
 
-def make_entry():
+def read_jsonl(path):
+    entries = []
+    try:
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                try:
+                    entries.append(json.loads(line))
+                except json.JSONDecodeError:
+                    pass
+    except OSError:
+        pass
+    return entries
+
+
+def write_jsonl(path, entries):
+    if entries:
+        tmp = path + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            for e in entries:
+                f.write(json.dumps(e, ensure_ascii=False) + "\n")
+        os.replace(tmp, path)
+    elif os.path.exists(path):
+        os.remove(path)
+
+
+def observe():
+    """Screenshot beschreiben und als Beobachtung lokal ablegen (noch kein Eintrag)."""
     shot = call("vision.capture") or {}
     image = shot.get("image")
     if not image:
         log("vision.capture lieferte kein Bild")
-        return False
+        return
 
     prompt = setting("prompt", DEFAULT_PROMPT)
     res = call("llm.chat", {"messages": [{"role": "user", "content": [
@@ -335,16 +363,55 @@ def make_entry():
     ]}]})
     if not res or not res.get("content"):
         log("llm.chat ohne Antwort - Modell geladen und multimodal?")
-        return False
+        return
 
     text = res["content"].strip()
     if not text or text.upper().startswith("SKIP"):
-        log("KI meldet 'SKIP' - kein Eintrag")
-        return False
+        log("KI meldet 'SKIP' - keine Beobachtung")
+        return
+    with open(OBS_FILE, "a", encoding="utf-8") as f:
+        f.write(json.dumps({"at": datetime.now().isoformat(timespec="seconds"), "text": text},
+                           ensure_ascii=False) + "\n")
 
+
+def condense():
+    """Ist der Block um, die Beobachtungen zu einem Eintrag verdichten. True = Eintrag."""
+    obs = read_jsonl(OBS_FILE)
+    if not obs:
+        return False
+    try:
+        minutes = max(5, int(setting("block", DEFAULT_BLOCK)))
+    except ValueError:
+        minutes = int(DEFAULT_BLOCK)
     now = datetime.now()
-    enqueue({"date": "{:%Y-%m-%d}".format(now), "time": "{:%H:%M}".format(now), "text": text})
-    return True
+    first = datetime.fromisoformat(obs[0]["at"])
+    if (now - first).total_seconds() < minutes * 60:
+        return False
+    # Ein Block umfasst die eingestellte Zeitspanne ab der ersten Beobachtung und
+    # endet spätestens am Tageswechsel (eine Lücke, z. B. Clippy aus, schließt ihn)
+    block = []
+    for o in obs:
+        at = datetime.fromisoformat(o["at"])
+        if (at - first).total_seconds() >= minutes * 60 or at.date() != first.date():
+            break
+        block.append(o)
+
+    start, end = first, datetime.fromisoformat(block[-1]["at"])
+    lines = "\n".join("{:%H:%M} {}".format(datetime.fromisoformat(o["at"]), o["text"]) for o in block)
+    res = call("llm.chat", {"messages": [{"role": "user", "content": BLOCK_PROMPT.format(
+        start="{:%H:%M}".format(start), end="{:%H:%M}".format(end), observations=lines)}]})
+    if not res or not res.get("content"):
+        log("llm.chat ohne Antwort beim Verdichten, nächster Versuch beim nächsten Trigger")
+        return False
+    text = res["content"].strip()
+    written = bool(text) and not text.upper().startswith("SKIP")
+    if written:
+        span = "{:%H:%M}".format(start) if start == end else "{:%H:%M}–{:%H:%M}".format(start, end)
+        enqueue({"date": "{:%Y-%m-%d}".format(start), "time": span, "text": text})
+    else:
+        log("Block {:%H:%M}: nichts Aussagekräftiges".format(start))
+    write_jsonl(OBS_FILE, obs[len(block):])
+    return written
 
 
 def summarize(prompt):
@@ -363,7 +430,8 @@ def t3_entries():
 
 
 def on_trigger():
-    new = make_entry()
+    observe()
+    new = condense()
     try:
         if t3_entries():
             new = True

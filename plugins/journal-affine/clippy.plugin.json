@@ -7,8 +7,8 @@
   "version": "0.1.0",
   "hostApi": "^1.0",
   "description": {
-    "de": "Wie das visuelle Tagebuch: periodisch ein Screenshot, die lokale KI beschreibt, woran du arbeitest. Die Einträge landen aber in einem selbst gehosteten oder Cloud-AFFiNE, als ein Journal-Doc pro Tag in einem eigenen Ordner. Optional kommen Zusammenfassungen gesettleter T3-Code-Threads dazu. Ist AFFiNE nicht erreichbar, puffert das Plugin und liefert später nach. Braucht ein multimodales Modell, Node.js (npx) und einen einmaligen Login, siehe README.",
-    "en": "Like the visual journal: periodic screenshot, the local AI describes what you are working on. Entries go to a self-hosted or cloud AFFiNE instead, one journal doc per day in a dedicated folder. Optionally adds summaries of settled T3 Code threads. If AFFiNE is unreachable, entries are queued and delivered later. Requires a multimodal model, Node.js (npx) and a one-time login, see README."
+    "de": "Wie das visuelle Tagebuch: periodisch ein Screenshot, die lokale KI beschreibt, woran du arbeitest. Die Beobachtungen werden pro Block (Standard 30 Minuten) zu einem kurzen Eintrag verdichtet und landen in einem selbst gehosteten oder Cloud-AFFiNE, als ein Journal-Doc pro Tag in einem eigenen Ordner. Optional kommen Zusammenfassungen gesettleter T3-Code-Threads dazu. Ist AFFiNE nicht erreichbar, puffert das Plugin und liefert später nach. Braucht ein multimodales Modell, Node.js (npx) und einen einmaligen Login, siehe README.",
+    "en": "Like the visual journal: periodic screenshot, the local AI describes what you are working on. Observations are condensed into one short entry per block (default 30 minutes) and go to a self-hosted or cloud AFFiNE instead, one journal doc per day in a dedicated folder. Optionally adds summaries of settled T3 Code threads. If AFFiNE is unreachable, entries are queued and delivered later. Requires a multimodal model, Node.js (npx) and a one-time login, see README."
   },
   "runtime": "sidecar",
   "entry": {
@@ -32,14 +32,50 @@
           "key": "prompt",
           "type": "string",
           "label": {
-            "de": "Analyse-Prompt",
-            "en": "Analysis prompt"
+            "de": "Beobachtungs-Prompt",
+            "en": "Observation prompt"
           },
           "help": {
-            "de": "Was die KI zum Screenshot beantworten soll. Antwortet sie mit SKIP, wird kein Eintrag geschrieben.",
-            "en": "What the AI should answer about the screenshot. If it replies SKIP, no entry is written."
+            "de": "Was die KI zu jedem Screenshot notieren soll (kurz und sachlich). Antwortet sie mit SKIP, wird nichts notiert. Die Notizen werden pro Block zu einem Eintrag verdichtet.",
+            "en": "What the AI should note about each screenshot (short and factual). If it replies SKIP, nothing is noted. Notes are condensed into one entry per block."
           },
-          "default": "Schau dir diesen Screenshot an und beschreibe in 1–2 Sätzen in der Ich-Form, woran ich gerade arbeite — sachlich, als Tagebuch-Eintrag. Wenn nichts Aussagekräftiges zu sehen ist, antworte nur mit: SKIP"
+          "default": "Notiere im Telegrammstil (höchstens 25 Wörter), was auf diesem Screenshot zu sehen ist: App, Projekt bzw. Repo, Datei oder Webseite und Thema bzw. Tätigkeit. Übernimm konkrete Namen, die sichtbar sind (Fenster- und Thread-Titel, Dateinamen, Überschriften). Nur was sichtbar ist, nicht raten. Wenn nichts Aussagekräftiges zu sehen ist (Sperrbildschirm, leerer Desktop), antworte nur mit: SKIP"
+        },
+        {
+          "key": "block",
+          "type": "select",
+          "label": {
+            "de": "Eintrag pro Block",
+            "en": "One entry per block"
+          },
+          "help": {
+            "de": "Die Beobachtungen dieser Zeitspanne werden zu einem kurzen Eintrag zusammengefasst.",
+            "en": "Observations of this time span are condensed into one short entry."
+          },
+          "default": "30",
+          "options": [
+            {
+              "value": "15",
+              "label": {
+                "de": "15 Minuten",
+                "en": "15 minutes"
+              }
+            },
+            {
+              "value": "30",
+              "label": {
+                "de": "30 Minuten",
+                "en": "30 minutes"
+              }
+            },
+            {
+              "value": "60",
+              "label": {
+                "de": "1 Stunde",
+                "en": "1 hour"
+              }
+            }
+          ]
         },
         {
           "key": "folder",
