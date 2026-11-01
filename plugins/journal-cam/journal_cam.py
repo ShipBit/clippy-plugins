@@ -7,6 +7,10 @@ das Bild zusammen mit einem konfigurierbaren Prompt an das lokale multimodale
 Modell (``llm.chat``, Bild im OpenAI-Vision-Format) und haengt die Antwort mit
 Zeitstempel an eine Markdown-Datei an (eine Datei pro Tag). Alles bleibt lokal.
 
+Optional (Einstellung ``t3``) kommen gesettlete Threads aus T3 Code dazu: Die
+KI fasst sie zusammen, der Eintrag landet unter der Uhrzeit des Settles im
+Tagebuch (siehe ``t3_threads.py``).
+
 Zeigt zugleich, dass ein Sidecar-Plugin eigene Dateien schreiben darf (eigener
 Prozess) und wie String-Einstellungen ueber ``storage.string`` gelesen werden.
 """
@@ -14,6 +18,8 @@ import json
 import os
 import sys
 from datetime import datetime
+
+import t3_threads
 
 # stdio ist laut Protokoll UTF-8. Auf Windows ist Pythons Default sonst die
 # Locale-Codepage → Umlaute in den Host-Nachrichten kämen falsch an. Der Host
@@ -67,14 +73,24 @@ def notify(method, params):
     sys.stdout.flush()
 
 
-def journal_path():
+def journal_path(when):
     folder = (call("storage.string", {"key": "folder", "default": ""}) or "").strip()
     if not folder:
         home = os.path.expanduser("~")
         docs = os.path.join(home, "Documents")
         folder = docs if os.path.isdir(docs) else home
     os.makedirs(folder, exist_ok=True)
-    return os.path.join(folder, "clippy-journal-{:%Y-%m-%d}.md".format(datetime.now()))
+    return os.path.join(folder, "clippy-journal-{:%Y-%m-%d}.md".format(when))
+
+
+def append_entry(when, text):
+    path = journal_path(when)
+    new_file = not os.path.exists(path)
+    with open(path, "a", encoding="utf-8") as f:
+        if new_file:
+            f.write("# Tagebuch {:%Y-%m-%d}\n\n".format(when))
+        f.write("## {:%H:%M}\n\n{}\n\n".format(when, text))
+    return path
 
 
 def make_entry():
@@ -98,18 +114,26 @@ def make_entry():
         print("KI meldet 'SKIP' (nichts Aussagekraeftiges) - kein Eintrag", file=sys.stderr)
         return  # nichts Aussagekraeftiges -> keinen Eintrag schreiben
 
-    path = journal_path()
-    new_file = not os.path.exists(path)
-    now = datetime.now()
-    with open(path, "a", encoding="utf-8") as f:
-        if new_file:
-            f.write("# Tagebuch {:%Y-%m-%d}\n\n".format(now))
-        f.write("## {:%H:%M}\n\n{}\n\n".format(now, text))
-
+    path = append_entry(datetime.now(), text)
     want_bubble = call("storage.bool", {"key": "notify", "default": False})
     print("Eintrag geschrieben: {} (notify={})".format(path, want_bubble), file=sys.stderr)
     if want_bubble:
         notify("ui.showBubble", {"kind": "journal", "text": "Tagebuch-Eintrag gespeichert"})
+
+
+def summarize(prompt):
+    res = call("llm.chat", {"messages": [{"role": "user", "content": prompt}]})
+    return (res or {}).get("content")
+
+
+def t3_entries():
+    if not call("storage.bool", {"key": "t3", "default": False}):
+        return
+    spec = call("storage.string", {"key": "t3Projects", "default": ""}) or ""
+    log = lambda text: print(text, file=sys.stderr)  # noqa: E731
+    watcher = t3_threads.Watcher(t3_threads.state_dir("clippy-journal-cam"))
+    for when, text in watcher.entries(spec, summarize, log):
+        print("T3-Eintrag geschrieben: {}".format(append_entry(when, text)), file=sys.stderr)
 
 
 def main():
@@ -120,12 +144,13 @@ def main():
             continue
         params = msg.get("params") or {}
         if msg.get("method") == "event" and params.get("topic") == "trigger":
-            try:
-                make_entry()
-            except SystemExit:
-                raise
-            except Exception as e:  # ein einzelner Fehlversuch darf das Plugin nicht beenden
-                print("Journal-Fehler: {}".format(e), file=sys.stderr)
+            for step in (make_entry, t3_entries):
+                try:
+                    step()
+                except SystemExit:
+                    raise
+                except Exception as e:  # ein einzelner Fehlversuch darf das Plugin nicht beenden
+                    print("Journal-Fehler ({}): {}".format(step.__name__, e), file=sys.stderr)
 
 
 if __name__ == "__main__":
